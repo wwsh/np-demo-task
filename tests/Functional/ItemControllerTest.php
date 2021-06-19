@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Tests;
+namespace App\Tests\Functional;
 
+use App\Entity\User;
 use App\Repository\ItemRepository;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use App\Repository\UserRepository;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 
 class ItemControllerTest extends WebTestCase
@@ -18,10 +18,11 @@ class ItemControllerTest extends WebTestCase
         $itemRepository = static::$container->get(ItemRepository::class);
         $entityManager = static::$container->get(EntityManagerInterface::class);
 
+        /** @var User $user */
         $user = $userRepository->findOneByUsername('john');
 
         $client->loginUser($user);
-        
+
         $data = 'very secure new item data';
 
         $newItemData = ['data' => $data];
@@ -32,6 +33,7 @@ class ItemControllerTest extends WebTestCase
         $this->assertResponseIsSuccessful();
         $this->assertStringContainsString('very secure new item data', $client->getResponse()->getContent());
 
-        $userRepository->findOneByData($data);
+        $item = $itemRepository->findOneByData($data);
+        $this->assertEquals($user->getUsername(), $item->getUser()->getUsername());
     }
 }
