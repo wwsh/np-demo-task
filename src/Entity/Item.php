@@ -13,6 +13,8 @@ use App\Repository\ItemRepository;
  */
 class Item
 {
+    public const SERIALIZABLES = ['id', 'data', 'createdAt', 'updatedAt'];
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()

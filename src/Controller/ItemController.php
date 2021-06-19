@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class ItemController extends AbstractController
 {
@@ -19,27 +20,24 @@ class ItemController extends AbstractController
      * @Route("/item", name="item_list", methods={"GET"})
      * @IsGranted("ROLE_USER")
      */
-    public function list(): JsonResponse
+    public function list(SerializerInterface $serializer, ItemService $itemService): JsonResponse
     {
-        $items = $this->getDoctrine()->getRepository(Item::class)->findBy(['user' => $this->getUser()]);
+        $items = $itemService->getAll($this->getUser());
 
-        $allItems = [];
-        foreach ($items as $item) {
-            $oneItem['id'] = $item->getId();
-            $oneItem['data'] = $item->getData();
-            $oneItem['created_at'] = $item->getCreatedAt();
-            $oneItem['updated_at'] = $item->getUpdatedAt();
-            $allItems[] = $oneItem;
-        }
+        $data = $serializer->normalize(
+            $items,
+            null,
+            ['attributes' => Item::SERIALIZABLES]
+        );
 
-        return $this->json($allItems);
+        return $this->json($data);
     }
 
     /**
      * @Route("/item", name="item_create", methods={"POST"})
      * @IsGranted("ROLE_USER")
      */
-    public function create(Request $request, ItemService $itemService)
+    public function create(Request $request, ItemService $itemService): JsonResponse
     {
         $data = $request->get('data');
 
@@ -56,21 +54,19 @@ class ItemController extends AbstractController
      * @Route("/item/{id}", name="items_delete", methods={"DELETE"})
      * @IsGranted("ROLE_USER")
      */
-    public function delete(Request $request, int $id)
+    public function delete(Request $request, int $id, ItemService $itemService): JsonResponse
     {
         if (empty($id)) {
-            return $this->json(['error' => 'No data parameter'], Response::HTTP_BAD_REQUEST);
+            return $this->json(['error' => 'No id parameter'], Response::HTTP_BAD_REQUEST);
         }
 
-        $item = $this->getDoctrine()->getRepository(Item::class)->find($id);
+        $item = $itemService->get($id);
 
         if ($item === null) {
             return $this->json(['error' => 'No item'], Response::HTTP_BAD_REQUEST);
         }
 
-        $manager = $this->getDoctrine()->getManager();
-        $manager->remove($item);
-        $manager->flush();
+        $itemService->delete($item);
 
         return $this->json([]);
     }

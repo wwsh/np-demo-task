@@ -24,4 +24,22 @@ class ItemService
         $this->entityManager->persist($item);
         $this->entityManager->flush();
     }
-} 
+
+    public function getAll(User $user): array
+    {
+        return $this->entityManager->getRepository(Item::class)
+            ->findBy(['user' => $user]);
+    }
+
+    public function get(int $id): ?Item
+    {
+        return $this->entityManager->getRepository(Item::class)
+            ->find($id);
+    }
+
+    public function delete(Item $item): void
+    {
+        $this->entityManager->remove($item);
+        $this->entityManager->flush();
+    }
+}
