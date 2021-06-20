@@ -70,4 +70,31 @@ class ItemController extends AbstractController
 
         return $this->json([]);
     }
+
+    /**
+     * @Route("/item/{id}", name="items_put", methods={"PUT"})
+     * @IsGranted("ROLE_USER")
+     */
+    public function update(Request $request, int $id, ItemService $itemService): JsonResponse
+    {
+        if (empty($id)) {
+            return $this->json(['error' => 'No id parameter'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $item = $itemService->get($id);
+
+        if ($item === null) {
+            return $this->json(['error' => 'No item'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $data = $request->get('data');
+
+        if (empty($data)) {
+            return $this->json(['error' => 'No data parameter']);
+        }
+
+        $itemService->update($id, $data);
+
+        return $this->json([]);
+    }
 }

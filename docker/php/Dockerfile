@@ -16,6 +16,9 @@ RUN docker-php-ext-configure intl
 RUN docker-php-ext-install intl pdo pdo_mysql zip opcache bcmath sockets
 
 RUN pecl install xdebug && docker-php-ext-enable xdebug opcache
+# the following extension solves the PUT/PATCH + multipart data problem
+# see https://bugs.php.net/bug.php?id=55815
+RUN pecl install apfd  && docker-php-ext-enable apfd
 
 RUN echo "opcache.max_accelerated_files = 20000" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini
 

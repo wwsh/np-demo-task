@@ -42,4 +42,13 @@ class ItemService
         $this->entityManager->remove($item);
         $this->entityManager->flush();
     }
+
+    public function update(int $id, string $data): void
+    {
+        $item = $this->get($id);
+        $item->setData($data);
+
+        $this->entityManager->persist($item);
+        $this->entityManager->flush();
+    }
 }
