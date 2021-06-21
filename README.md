@@ -20,3 +20,22 @@ make tests
 ### Postman requests collection
 
 You can import all available API calls to Postman using `postman_collection.json` file
+
+### Reference
+
+This API supports the following requests:
+
+* `POST /login` - authenticates user with given username and password 
+  
+* `POST /logout` - removes user authentication and closes session 
+  
+* `GET /item` - retrieves items with data for currently logged in user
+  
+* `POST /item` - creates a new item with data for the current user 
+
+* `PUT /item/{id}` - updates data for the given item's id 
+
+* `DELETE /item/{id}` - removes item completely for the current user 
+
+
+
