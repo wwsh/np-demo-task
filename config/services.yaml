@@ -25,3 +25,13 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    FOS\HttpCache\ProxyClient\HttpDispatcher:
+        arguments:
+            $servers: ['securestorage_varnish:80']
+            $baseUri: 'secure-storage.localhost'
+
+    FOS\HttpCache\ProxyClient\Varnish:
+        arguments:
+            $httpDispatcher: '@FOS\HttpCache\ProxyClient\HttpDispatcher'
+
+    App\EventListener\CacheInvalidationListener:
