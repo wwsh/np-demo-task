@@ -66,6 +66,10 @@ class ItemController extends AbstractController
             return $this->json(['error' => 'No item'], Response::HTTP_BAD_REQUEST);
         }
 
+        if ($item->getUser()->getId() !== $this->getUser()->getId()) {
+            return $this->json(['error' => 'Not allowed'], Response::HTTP_FORBIDDEN);
+        }
+
         $itemService->delete($item);
 
         return $this->json([]);
