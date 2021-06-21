@@ -26,3 +26,11 @@ services:
             MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
             MYSQL_DB_NAME: ${MYSQL_DB_NAME}
         container_name: securestorage_mysql
+
+    varnish:
+        image: varnish
+        container_name: securestorage_varnish
+        volumes:
+            - ./docker/varnish/default.vcl:/etc/varnish/default.vcl:cached
+        ports:
+            - 127.0.0.1:${VARNISH_PORT}:80
