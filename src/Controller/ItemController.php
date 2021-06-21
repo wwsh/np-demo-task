@@ -90,7 +90,11 @@ class ItemController extends AbstractController
         $data = $request->get('data');
 
         if (empty($data)) {
-            return $this->json(['error' => 'No data parameter']);
+            return $this->json(['error' => 'No data parameter'], Response:: HTTP_BAD_REQUEST);
+        }
+
+        if ($item->getUser()->getId() !== $this->getUser()->getId()) {
+            return $this->json(['error' => 'Not allowed'], Response::HTTP_FORBIDDEN);
         }
 
         $itemService->update($id, $data);
